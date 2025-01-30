@@ -1,6 +1,4 @@
 import sys
-import asyncio
-from typing import List
 
 from path_handler import PathManager
 
