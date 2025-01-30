@@ -11,8 +11,8 @@ path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
 from src.config.config import AugmenterConfig
-from src.augmentation.translator import Translator
-from src.augmentation.paraphraser import Paraphraser
+from src.augmenter.translator import Translator
+from src.augmenter.paraphraser import Paraphraser
 
 
 class BaseAugmenter:
@@ -54,7 +54,7 @@ class BaseAugmenter:
     
 if __name__ == "__main__":
     from src.config.default import AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG
-    from src.augmentation.factory import AugmenterFactory
+    from src.augmenter.factory import AugmenterFactory
     
     augmenter = AugmenterFactory.create(AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG)
     asyncio.run(augmenter.augment(pd.read_csv("../../data/digikala_faq.csv"), save=True))
