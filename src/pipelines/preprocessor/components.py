@@ -51,3 +51,11 @@ class InformalNormalizerComponents(PreprocessorComponents):
         informal_normalized_text = self.informal_normalizer.normalize(text)
         informal_normalized_text = [i[0] for i in informal_normalized_text[0]]
         return " ".join(informal_normalized_text)
+
+
+class StopwordsRemoverComponents(PreprocessorComponents):
+    def __init__(self, stopwords: List[str]):
+        self.stopwords = set(stopwords)
+
+    def process(self, tokens: List[str]) -> List[str]:
+        return [token for token in tokens if token not in self.stopwords]
