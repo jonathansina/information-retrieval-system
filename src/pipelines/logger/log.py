@@ -109,6 +109,19 @@ class MlFlowLogger:
             run_id=run.info.run_id, 
             figure=figure, 
             artifact_file=artifact_file
+        )
+        
+    @classmethod
+    def log_table(cls, table: Any, artifact_file: str):
+        """Log a table as an artifact for the current run."""
+        if not mlflow.active_run():
+            raise ValueError("Logger has not been started yet.")
+        
+        run = mlflow.active_run()
+        cls.mlflow_client.log_table(
+            run_id=run.info.run_id, 
+            data=table, 
+            artifact_file=artifact_file
         ) 
 
     @classmethod

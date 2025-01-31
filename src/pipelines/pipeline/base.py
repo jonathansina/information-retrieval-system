@@ -46,9 +46,8 @@ class TrainingPipeline(BasePipeline):
         vectorized_queries = self.vectorizer.vectorize(preprocessed_queries)
 
         search_result = self.similarity.search(vectorized_queries, vectorized_corpus)
-        
-        print(self.evaluator.evaluate(search_result))
-        
+        self.evaluator.evaluate(search_result)
+
         return vectorized_corpus
 
 

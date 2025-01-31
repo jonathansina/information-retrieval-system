@@ -10,13 +10,15 @@ from path_handler import PathManager
 path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
+from src.pipelines.logger.base import EvaluatorLogger
 from src.pipelines.config.config import EvaluatorConfig
 
 
 class BaseEvaluator:
     def __init__(self, config: EvaluatorConfig):
         self.config = config
-        
+    
+    @EvaluatorLogger.observe
     def evaluate(self, search_result: List[List[int]]) -> float:
         true_classes = self.config.evaluation_dataset["category"]
         report, confusion_matrix = self._get_classification_result(search_result, true_classes)
