@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', event => {
 	let query = '';
 
 	const retrievalButton = document.querySelector('.retrieval_button');
-	const retrievalResult = document.querySelector('retrieval_result');
+	const retrievalResult = document.querySelector('.retrieval_result');
 
 	form.addEventListener('submit', function (event) {
 		event.preventDefault(); // Prevent the default form submission
@@ -23,20 +23,24 @@ document.addEventListener('DOMContentLoaded', event => {
 			firstQuery = !firstQuery;
 		}
 
-		chathistory.innerHTML += `<p class="user_message">${query}</p>`;
+		chathistory.innerHTML += `<p class="message user_message">${query}</p>`;
+	});
+
+	retrievalButton.addEventListener('click', () => {
+		retrievalResult.classList.toggle('retrieval_result--active');
 	});
 
 	const socket = io('http://localhost:5000');
 
 	socket.on('ir_results', data => {
 		retrievalButton.classList.toggle('retrieval_button--rotate');
-		retrievalResult.innerHTML = `<ul>${data.ir_results
-			.map(result => `<li>${result}</li>`)
-			.join('')}</ul>`;
+		retrievalResult.innerHTML = `${data.ir_results
+			.map(result => `<div class="retrieved_item">${result}</div>`)
+			.join('')}`;
 	});
 
 	socket.on('llm_response', data => {
-		chathistory.innerHTML += `<p class="agent_message">${data.llm_response}</p>`;
+		chathistory.innerHTML += `<p class="message agent_message">${data.llm_response}</p>`;
 	});
 
 	form.addEventListener('submit', async e => {
