@@ -48,7 +48,7 @@ class EvaluatorLogger(BaseLogger):
 class PipelineLogger(BaseLogger):
     @staticmethod
     def _log_vectorizer(*args):
-        if args[0].vectorizer.config.vectorizer != "sentence-transformers":
+        if args[0].vectorizer.config.vectorizer != "sentence-transformer":
             MlFlowLogger.log_artifact(args[0].vectorizer.strategy.vectorizer, "vectorizer.pkl") 
        
     @staticmethod

@@ -5,10 +5,11 @@ from path_handler import PathManager
 path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
-from src.config.config import AugmenterConfig, ParaphraserConfig
+from src.augmenter.base import BaseAugmenter
 from src.augmenter.translator import Translator
 from src.augmenter.paraphraser import Paraphraser
-from src.augmenter.base import BaseAugmenter
+from src.config.config import AugmenterConfig, ParaphraserConfig
+
 
 class AugmenterFactory:
     @classmethod

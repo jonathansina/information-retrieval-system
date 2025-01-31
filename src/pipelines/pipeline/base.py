@@ -9,6 +9,7 @@ path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
 from src.pipelines.type_hint import ControllerType
+from src.pipelines.logger.base import PipelineLogger
 from src.pipelines.config.config import PipelineConfig
 from src.pipelines.evaluator.base import  BaseEvaluator
 from src.pipelines.vectorizer.base import BaseVectorizer
@@ -16,7 +17,6 @@ from src.pipelines.vocabulary.base import VocabularyBuilder
 from src.pipelines.pipeline.registry import PipelineRegistry
 from src.pipelines.preprocessor.base import BasePreprocessor
 from src.pipelines.similarity.base import BaseSimilaritySearch
-from src.pipelines.logger.base import PipelineLogger
 
 
 class BasePipeline(ABC):
@@ -56,7 +56,15 @@ class InferencePipeline(BasePipeline):
     @PipelineLogger.observe
     def run(self, query: str) -> float:
         series_query = pd.Series([query])
+        vectorized_corpus = self.vocabulary(None)
+        
         preprocessed_query = self.preprocessor.process(series_query)
-        query_vector = self.vectorizer.vectorize(preprocessed_query)
+        vectorized_query = self.vectorizer.vectorize(preprocessed_query)
+        
+        retrieved_index = self.similarity.search(vectorized_query, vectorized_corpus)[0]
 
-        print(query_vector)
+        return {
+            "retrieved_question": self.config.training_dataset["question"][retrieved_index],
+            "retrieved_answer": self.config.training_dataset["answer"][retrieved_index], 
+            "retrieved_category": self.config.training_dataset["category"][retrieved_index],
+        }
