@@ -221,7 +221,7 @@ body {
 .retrieved_item
 {
     width: 90%;
-    height: auto;
+    max-height: 15%;
 
     background-color: #ECECEC;
     
@@ -232,8 +232,14 @@ body {
     direction: rtl;
     overflow: hidden;
 
+    cursor: pointer;
+
     border-radius: 30px;
     margin-bottom: 10px;
+}
+
+.retrieved_item:focus {
+    margin-left: 20px;
 }
 
 .retrieval_button {
@@ -265,4 +271,64 @@ body {
 .retrieval_button--rotate {
     transition: transform 1s ease;
     transform: rotate(360deg);
+}
+
+#blur {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    width: 100vw;
+    height: 100vh;
+    z-index: -50;
+
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.blured {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition-duration: 2s;
+    opacity: 1;
+    z-index: 50;
+}
+
+.retrieval_result_focused {
+    position: fixed;
+    top: 0;
+    left: 20vw;
+    
+    width: 80vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    z-index: -10;
+}
+
+.retrieved_item_table {
+    margin: 0 auto 1vw;
+    direction: rtl;
+    width: 60vw;
+    border-radius: 25px;
+    display: none;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.retrieved_item_table--active {
+    display: table;
+    opacity: 1;
+}
+
+.retrieved_item_table td {
+    padding: 5px 0;
+    width: auto;
+    text-align: center;
+    border: 1px solid #282C34;
+    font-size: var(--sm);
 }

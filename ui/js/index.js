@@ -6,23 +6,20 @@ document.addEventListener('DOMContentLoaded', event => {
 	const queryInput = document.getElementById('query');
 	const chathistory = document.querySelector('.history');
 	let query = '';
-
 	const retrievalButton = document.querySelector('.retrieval_button');
 	const retrievalResult = document.querySelector('.retrieval_result');
+	const retrievalFocused = document.querySelector('.retrieval_result_focused');
 
 	form.addEventListener('submit', function (event) {
 		event.preventDefault(); // Prevent the default form submission
 		query = queryInput.value;
 		queryInput.value = '';
-
 		if (firstQuery) {
 			form.classList.add('moved');
 			retrievalButton.classList.add('retrieval_button--active');
 			chathistory.classList.add('history--active');
-
 			firstQuery = !firstQuery;
 		}
-
 		chathistory.innerHTML += `<p class="message user_message">${query}</p>`;
 	});
 
@@ -35,8 +32,19 @@ document.addEventListener('DOMContentLoaded', event => {
 	socket.on('ir_results', data => {
 		retrievalButton.classList.toggle('retrieval_button--rotate');
 		retrievalResult.innerHTML = `${data.ir_results
-			.map(result => `<div class="retrieved_item">${result}</div>`)
+			.map(result => `<div class="retrieved_item" tabindex="0">${result.question}</div>`)
 			.join('')}`;
+		retrievalFocused.innerHTML = `${data.ir_results
+			.map(
+				result => `<table class="retrieved_item_table">
+				<tr><td>سوال</td><td>${result.question}</td></tr>
+				<tr><td>پاسخ</td><td>${result.answer}</td></tr>
+				<tr><td>دسته‌بندی</td><td>${result.category}</td></tr>
+				</table>`
+			)
+			.join('')}`;
+
+		addEventListenersToRetrievedItems();
 	});
 
 	socket.on('llm_response', data => {
@@ -46,7 +54,6 @@ document.addEventListener('DOMContentLoaded', event => {
 	form.addEventListener('submit', async e => {
 		e.preventDefault();
 		console.log(query);
-
 		const response = await fetch('/submit', {
 			method: 'POST',
 			headers: {
@@ -54,9 +61,82 @@ document.addEventListener('DOMContentLoaded', event => {
 			},
 			body: JSON.stringify({ query }),
 		});
-
 		if (!response.ok) {
 			console.error('Failed to submit query');
 		}
 	});
+
+	function addEventListenersToRetrievedItems() {
+		let retrievedItems = document.querySelectorAll('.retrieved_item');
+		let currentIndex = -1;
+
+		// Remove any existing event listeners to avoid duplicates
+		retrievedItems.forEach(item => {
+			item.removeEventListener('click', handleItemClick);
+			item.removeEventListener('focus', handleItemFocus);
+			item.removeEventListener('blur', handleItemBlur);
+		});
+
+		retrievedItems.forEach((item, index) => {
+			item.addEventListener('click', () => handleItemClick(item, index));
+			item.addEventListener('focus', () => handleItemFocus(index));
+			item.addEventListener('blur', () => handleItemBlur(index));
+		});
+
+		document.addEventListener('keydown', event => {
+			if (currentIndex === -1) return; // If no item has been clicked yet, do nothing
+
+			if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+				// Move to the next or previous item
+				if (event.key === 'ArrowUp') {
+					currentIndex = currentIndex > 0 ? currentIndex - 1 : retrievedItems.length - 1;
+				} else if (event.key === 'ArrowDown') {
+					currentIndex = currentIndex < retrievedItems.length - 1 ? currentIndex + 1 : 0;
+				}
+
+				// Deselect the previously selected item
+				if (document.activeElement.classList.contains('retrieved_item')) {
+					document.activeElement.blur(); // Remove focus from the previous item
+				}
+
+				// Select the new item
+				const selectedItem = retrievedItems[currentIndex];
+				selectedItem.focus(); // This will make the div "active" so it can be styled differently if needed
+				// resizeDiv(selectedItem); // Resize the newly selected item
+			}
+
+			// if (event.key == "Escape") {
+			// 	currentIndex
+			// }
+		});
+	}
+
+	function handleItemClick(item, index) {
+		// resizeDiv(item);
+		// Update current index
+		currentIndex = index;
+		// Focus the clicked item
+		item.focus();
+	}
+
+	function handleItemFocus(index) {
+		document
+			.querySelectorAll('.retrieved_item_table')
+			[index].classList.add('retrieved_item_table--active');
+	}
+
+	function handleItemBlur(index) {
+		// Logic to execute when the item loses focus
+		// console.log(`Item ${index} lost focus`);
+		// Example: Reset some styles or state
+		document
+			.querySelectorAll('.retrieved_item_table')
+			[index].classList.remove('retrieved_item_table--active');
+	}
+
+	function resizeDiv(div) {
+		const currentHeight = div.offsetHeight;
+		const newHeight = currentHeight === 100 ? 200 : 100; // Toggle between two sizes
+		div.style.height = `${newHeight}px`;
+	}
 });

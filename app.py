@@ -6,7 +6,33 @@ import time
 
 # Mock functions for IR and LLM
 def get_ir_results(query):
-    return [f"Match1{query}", "Match2", "Match3", "Match4", "Match5"]
+    return [
+        {
+            "question": "q1",
+            "answer": "a1",
+            "category": "c1"
+        },
+        {
+            "question": "q2",
+            "answer": "a2",
+            "category": "c2"
+        },
+        {
+            "question": "q3",
+            "answer": "a3",
+            "category": "c3"
+        },
+        {
+            "question": "q4",
+            "answer": "a4",
+            "category": "c4"
+        },
+        {
+            "question": "q5",
+            "answer": "a5",
+            "category": "c5"
+        },
+    ]
 
 def get_llm_response(query):
     time.sleep(2)  # Simulate delay
