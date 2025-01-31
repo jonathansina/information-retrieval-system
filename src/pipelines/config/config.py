@@ -34,6 +34,7 @@ class VectorizerConfig:
 class SimilaritySearchConfig:
     metrics: Literal["jaccard", "cosine", "euclidean", "minowski"]
     metrics_param: Dict[str, Any]
+    threshold: Optional[float] = None
 
 
 @dataclass

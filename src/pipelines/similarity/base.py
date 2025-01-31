@@ -15,7 +15,7 @@ class BaseSimilaritySearch:
     def __init__(self, config: SimilaritySearchConfig, strategy: SimilaritySearchStrategy):
         self.config = config
         self.strategy = strategy
-        
+
     def search(self, query_vector: np.ndarray, corpus_vectors: np.ndarray) -> List[List[int]]:        
-        neighbor_indices = self.strategy.search(query_vector, corpus_vectors)
+        neighbor_indices = self.strategy.search(query_vector, corpus_vectors, self.config.threshold)
         return neighbor_indices

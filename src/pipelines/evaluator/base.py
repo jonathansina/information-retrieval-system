@@ -1,7 +1,6 @@
 import sys
-from typing import List, Tuple, Dict, Any
+from typing import List, Dict, Any
 
-import numpy as np
 from sklearn.metrics import classification_report
 
 from path_handler import PathManager
@@ -22,8 +21,8 @@ class BaseEvaluator:
         relevant_classes = self.config.evaluation_dataset["category"]
         report = self._get_classification_result(search_result, relevant_classes)
         mrr_score = self._get_mean_reciprocal_rank(search_result, relevant_classes)
-        precision = self._calculate_precision_at_k(search_result, relevant_classes, self.config.k)
         recall = self._calculate_recall_at_k(search_result, relevant_classes, self.config.k)
+        precision = self._calculate_precision_at_k(search_result, relevant_classes, self.config.k)
         
         return {
             "mrr_score": mrr_score,
@@ -84,5 +83,4 @@ class BaseEvaluator:
 
         top_k_docs = self.config.training_dataset["category"][retrieved_docs[:k]]
         relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
-        
         return relevant_count / len(relevant_docs)

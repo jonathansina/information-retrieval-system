@@ -79,7 +79,7 @@ class PipelineBuilder:
         
         self._components.vocabulary = vocabulary
         return self
-    
+
     def with_similarity(self, logger: Optional[bool] = False) -> "PipelineBuilder":
         similarity = SimilaritySearchFactory.create(self._components.config.similarity_config)
 
@@ -97,7 +97,7 @@ class PipelineBuilder:
 
         self._components.evaluator = evaluator
         return self
-    
+
     def with_logger(self, run_name: str, experiment_name: str, mode: Literal["production", "development"]) -> "PipelineBuilder":
         if self.controller_type == ControllerType.INFERENCE:
             self.run_name = run_name
@@ -150,17 +150,17 @@ if __name__ == "__main__":
     pipeline.run()
 
     
-    # 2. THEN USE THE MODEL FOR INFERENCE WITHOUT LOGGER
-    pipeline = (
-        PipelineBuilder(controller_type=ControllerType.INFERENCE)
-        .with_logger("information-retrieval", "IRS", "development")
-        .with_config(PIPELINE_DEFAULT_CONFIG)
-        .with_preprocessor()
-        .with_vectorizer()
-        .with_vocabulary()
-        .with_similarity()
-        .with_evaluator()
-        .build()
-    )
-    result = pipeline.run("بهترین لپ تاپ چی هست؟")
-    print(result)
+    # # 2. THEN USE THE MODEL FOR INFERENCE WITHOUT LOGGER
+    # pipeline = (
+    #     PipelineBuilder(controller_type=ControllerType.INFERENCE)
+    #     .with_logger("information-retrieval", "IRS", "development")
+    #     .with_config(PIPELINE_DEFAULT_CONFIG)
+    #     .with_preprocessor()
+    #     .with_vectorizer()
+    #     .with_vocabulary()
+    #     .with_similarity()
+    #     .with_evaluator()
+    #     .build()
+    # )
+    # result = pipeline.run("بهترین لپ تاپ چی هست؟")
+    # print(result)
