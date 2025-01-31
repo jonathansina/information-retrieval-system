@@ -9,6 +9,7 @@ sys.path.append(str(path_manager.get_base_directory()))
 
 from src.pipelines.config.config import (
     PipelineConfig,
+    EvaluatorConfig,
     VectorizerConfig, 
     VocabularyConfig, 
     PreprocessorConfig,
@@ -56,14 +57,14 @@ metrics_param ={
 
 sentence_transformer_param = {
     "model_name_or_path": "sentence-transformers/LaBSE",
-    "token": ...
+    "token": "<USE YOUR OWN>"
 }
 
 tf_idf_param = {
     "max_features": 10000,
-    "ngram_range": (1, 2),
-    "max_df": 0.85,
-    "min_df": 0.01
+    # "ngram_range": (1, 1),
+    # "max_df": 0.85,
+    # "min_df": 0.01
 }
 
 
@@ -72,7 +73,7 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
     informal_normalizer=True,
     normalizer=True,
     stemmer=False, 
-    lemmatizer=True,
+    lemmatizer=False,
     informal_normalizer_param=informal_normalizer_param,
     normalizer_param=normalizer_param,
     lemmatizer_param=lemmatizer_param,
@@ -80,13 +81,13 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
 
 
 VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
-    vectorizer="sentence-transformer", 
-    vectorizer_param=sentence_transformer_param
+    vectorizer="tf-idf", 
+    vectorizer_param=tf_idf_param
 )
 
 
 SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
-    metrics="cosine",
+    metrics="euclidean",
     metrics_param={}
 )
 
@@ -96,12 +97,18 @@ VOCABULARY_DEFAULT_CONFIG = VocabularyConfig(
     save_path="../../../data/vocabulary.txt"
 )
 
+EVALUATOR_DEFAULT_CONFIG = EvaluatorConfig(
+    training_dataset=training_dataset, 
+    evaluation_dataset=evaluation_dataset
+)
+
 
 PIPELINE_DEFAULT_CONFIG = PipelineConfig(
     preprocessor_config=PREPROCESSOR_DEFAULT_CONFIG,
     vectorizer_config=VECTORIZER_DEFAULT_CONFIG,
     similarity_config=SIMILARITY_SEARCH_DEFAULT_CONFIG,
     vocabulary_config=VOCABULARY_DEFAULT_CONFIG, 
+    evaluator_config=EVALUATOR_DEFAULT_CONFIG,
     training_dataset=training_dataset, 
     evaluation_dataset=evaluation_dataset
 )

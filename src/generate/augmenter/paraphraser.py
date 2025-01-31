@@ -8,7 +8,7 @@ from path_handler import PathManager
 path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
-from src.config.config import ParaphraserConfig
+from src.generate.config.config import ParaphraserConfig
 
 
 tokenizer = AutoTokenizer.from_pretrained("humarin/chatgpt_paraphraser_on_T5_base")
@@ -57,7 +57,7 @@ class Paraphraser:
 
 
 if __name__ == "__main__":
-    from src.config.default import PARAPHRASER_DEFAULT_CONFIG
+    from src.generate.config.default import PARAPHRASER_DEFAULT_CONFIG
     
     paraphraser = Paraphraser(PARAPHRASER_DEFAULT_CONFIG)
     print(paraphraser.paraphrase("Hello, how are you?"))
