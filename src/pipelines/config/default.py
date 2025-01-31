@@ -1,5 +1,7 @@
 import sys
 
+import pandas as pd
+
 from path_handler import PathManager
 
 path_manager = PathManager()
@@ -13,7 +15,9 @@ from src.pipelines.config.config import (
     SimilaritySearchConfig
 )
 
-
+training_dataset = pd.read_csv("../../../data/augmented_dataset.csv")
+evaluation_dataset = pd.read_csv("../../../data/test_digikala_faq.csv")
+    
 tokenizer_param = {
     "join_verb_parts": True,
     "join_abbreviations": True,
@@ -76,13 +80,12 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
 
 
 VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
-    vectorizer="tf-idf", 
-    vectorizer_param=tf_idf_param
+    vectorizer="sentence-transformer", 
+    vectorizer_param=sentence_transformer_param
 )
 
 
 SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
-    top_k=4, 
     metrics="cosine",
     metrics_param={}
 )
@@ -98,5 +101,7 @@ PIPELINE_DEFAULT_CONFIG = PipelineConfig(
     preprocessor_config=PREPROCESSOR_DEFAULT_CONFIG,
     vectorizer_config=VECTORIZER_DEFAULT_CONFIG,
     similarity_config=SIMILARITY_SEARCH_DEFAULT_CONFIG,
-    vocabulary_config=VOCABULARY_DEFAULT_CONFIG
+    vocabulary_config=VOCABULARY_DEFAULT_CONFIG, 
+    training_dataset=training_dataset, 
+    evaluation_dataset=evaluation_dataset
 )

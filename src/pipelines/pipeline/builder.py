@@ -1,13 +1,16 @@
 import sys
+from typing import Literal
 
 from path_handler import PathManager
 
 path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
+from src.pipelines.logger.log import MlFlowLogger
 from src.pipelines.type_hint import ControllerType
 from src.pipelines.pipeline.base import BasePipeline
 from src.pipelines.pipeline.factory import PipelineFactory
+from src.pipelines.evaluator.factory import EvaluatorFactory
 from src.pipelines.vectorizer.factory import VectorizerFactory
 from src.pipelines.preprocessor.factory import PreprocessorFactory
 from src.pipelines.similarity.factory import SimilaritySearchFactory
@@ -60,34 +63,54 @@ class PipelineBuilder:
         self._components.similarity = similarity
         return self
     
+    def with_evaluator(self) -> "PipelineBuilder":
+        evaluator = EvaluatorFactory.create(
+            traininng_dataset=self._components.config.training_dataset, 
+            evaluation_dataset=self._components.config.evaluation_dataset
+        )
+        
+        self._components.evaluator = evaluator
+        return self
+    
+    def with_logger(self, run_name: str, experiment_name: str, mode: Literal["production", "development"]) -> "PipelineBuilder":
+        logger = MlFlowLogger(
+            run_name=run_name, 
+            experiment_name=experiment_name,
+            mode=mode
+        )
+        logger.start_run()
+
+        self._components.logger = logger
+        return self
+    
     def build(self) -> BasePipeline:
         pipeline = PipelineFactory.create(
             controller_type=self.controller_type,
             config=self._components.config
         )
         
-        pipeline.preprocessor = self._components.preprocessor
+        pipeline.evaluator = self._components.evaluator
         pipeline.vectorizer = self._components.vectorizer
         pipeline.similarity = self._components.similarity
         pipeline.vocabulary = self._components.vocabulary
+        pipeline.preprocessor = self._components.preprocessor
 
         return pipeline
 
 
 if __name__ == "__main__":
     from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
-    import pandas as pd
-    
-    dataframe = pd.read_csv("../../../data/digikala_faq.csv")
 
     pipeline = (
-        PipelineBuilder(controller_type=ControllerType.INFERENCE)
+        PipelineBuilder(controller_type=ControllerType.TRAINING)
+        # .with_logger("information-retrieval", "IRS", "development")
         .with_config(PIPELINE_DEFAULT_CONFIG)
         .with_preprocessor()
         .with_vectorizer()
         .with_vocabulary()
         .with_similarity()
+        .with_evaluator()
         .build()
     )
 
-    score = pipeline.run("سلام و عرض ادب")
+    score = pipeline.run()

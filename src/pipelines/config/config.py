@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, Literal, Type
 
+import pandas as pd
+
 
 @dataclass
 class PreprocessorConfig:
@@ -31,7 +33,6 @@ class VectorizerConfig:
 
 @dataclass
 class SimilaritySearchConfig:
-    top_k: int
     metrics: Literal["jaccard", "cosine", "euclidean", "minowski"]
     metrics_param: Dict[str, Any]
 
@@ -52,6 +53,7 @@ class PipelineComponents:
     vectorizer: Optional[Type[Any]] = None
     similarity: Optional[Type[Any]] = None
     vocabulary: Optional[Type[Any]] = None
+    evaluator: Optional[Type[Any]] = None
     
     
 @dataclass
@@ -60,3 +62,5 @@ class PipelineConfig:
     vectorizer_config: VectorizerConfig
     similarity_config: SimilaritySearchConfig
     vocabulary_config: VocabularyConfig
+    training_dataset: Optional[pd.DataFrame] = None
+    evaluation_dataset: Optional[pd.DataFrame] = None

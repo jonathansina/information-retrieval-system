@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 import numpy as np
 from path_handler import PathManager
@@ -15,6 +16,6 @@ class BaseSimilaritySearch:
         self.config = config
         self.strategy = strategy
         
-    def search(self, query_vector: np.ndarray, corpus_vectors: np.ndarray) -> np.ndarray:        
+    def search(self, query_vector: np.ndarray, corpus_vectors: np.ndarray) -> List[List[int]]:        
         neighbor_indices = self.strategy.search(query_vector, corpus_vectors)
-        return neighbor_indices[:self.config.top_k]
+        return neighbor_indices
