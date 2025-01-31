@@ -1,20 +1,12 @@
 import os
-import sys
 import tempfile
 import pickle
 from typing import Literal, Dict, Any, List, Type
 
 import mlflow
-import pandas as pd
 from functools import lru_cache
 from mlflow.entities import Metric
 from mlflow.tracking import MlflowClient
-
-from path_handler import PathManager
-
-path_manager = PathManager()
-sys.path.append(str(path_manager.get_base_directory()))
-
 
 
 class MlFlowLogger:
@@ -91,9 +83,6 @@ class MlFlowLogger:
         """Log parameters for the current run."""        
         if not mlflow.active_run():
             raise ValueError("Logger has not been started yet.")
-         
-        if "model" in params.keys():
-            params["model"] = str(params["model"])
             
         mlflow.log_params(params)
         

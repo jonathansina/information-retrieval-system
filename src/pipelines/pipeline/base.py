@@ -16,6 +16,7 @@ from src.pipelines.vocabulary.base import VocabularyBuilder
 from src.pipelines.pipeline.registry import PipelineRegistry
 from src.pipelines.preprocessor.base import BasePreprocessor
 from src.pipelines.similarity.base import BaseSimilaritySearch
+from src.pipelines.logger.base import PipelineLogger
 
 
 class BasePipeline(ABC):
@@ -34,6 +35,7 @@ class BasePipeline(ABC):
 
 @PipelineRegistry.register(ControllerType.TRAINING)
 class TrainingPipeline(BasePipeline):
+    @PipelineLogger.observe
     def run(self) -> float:
         preprocessed_dataset = self.preprocessor.process(self.config.training_dataset["question"])
         corpus = self.vocabulary.build(preprocessed_dataset)
@@ -52,6 +54,7 @@ class TrainingPipeline(BasePipeline):
 
 @PipelineRegistry.register(ControllerType.INFERENCE)
 class InferencePipeline(BasePipeline):
+    @PipelineLogger.observe
     def run(self, query: str) -> float:
         series_query = pd.Series([query])
         preprocessed_query = self.preprocessor.process(series_query)

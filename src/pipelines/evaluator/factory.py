@@ -8,9 +8,10 @@ path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
 from src.pipelines.evaluator.base import BaseEvaluator
+from src.pipelines.config.config import EvaluatorConfig
 
 
 class EvaluatorFactory: 
     @classmethod
-    def create(self, traininng_dataset: pd.DataFrame, evaluation_dataset: pd.DataFrame) -> BaseEvaluator:
-        return BaseEvaluator(traininng_dataset, evaluation_dataset)
+    def create(self, config: EvaluatorConfig) -> BaseEvaluator:
+        return BaseEvaluator(config)

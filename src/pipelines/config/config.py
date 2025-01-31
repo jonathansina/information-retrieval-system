@@ -30,7 +30,6 @@ class VectorizerConfig:
         if self.mode:
             raise ValueError("Mode can not be set in initialization.")
 
-
 @dataclass
 class SimilaritySearchConfig:
     metrics: Literal["jaccard", "cosine", "euclidean", "minowski"]
@@ -48,6 +47,17 @@ class VocabularyConfig:
 
 
 @dataclass
+class EvaluatorConfig:
+    training_dataset: pd.DataFrame
+    evaluation_dataset: pd.DataFrame
+    logger: Optional[bool] = None
+    
+    def __pos_init__(self):
+        if self.logger:
+            raise ValueError("Logger can not be set in initialization.")
+
+
+@dataclass
 class PipelineComponents:
     preprocessor: Optional[Type[Any]] = None
     vectorizer: Optional[Type[Any]] = None
@@ -62,5 +72,11 @@ class PipelineConfig:
     vectorizer_config: VectorizerConfig
     similarity_config: SimilaritySearchConfig
     vocabulary_config: VocabularyConfig
+    evaluator_config: EvaluatorConfig
     training_dataset: Optional[pd.DataFrame] = None
     evaluation_dataset: Optional[pd.DataFrame] = None
+    logger: Optional[bool] = None
+    
+    def __pos_init__(self):
+        if self.logger:
+            raise ValueError("Logger can not be set in initialization.")

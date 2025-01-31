@@ -1,5 +1,5 @@
 import sys
-from typing import Literal
+from typing import Literal, Optional
 
 from path_handler import PathManager
 
@@ -36,19 +36,25 @@ class PipelineBuilder:
         self._components.config = config
         return self
     
-    def with_preprocessor(self):
+    def with_preprocessor(self, logger: Optional[bool] = False):
         preprocessor = PreprocessorFactory.create(self._components.config.preprocessor_config)
-        
+                
+        if logger:
+            MlFlowLogger.log_parameters(vars(self._components.config.preprocessor_config))
+            
         self._components.preprocessor = preprocessor
         return self
     
-    def with_vectorizer(self) -> "PipelineBuilder":
+    def with_vectorizer(self, logger: Optional[bool] = False) -> "PipelineBuilder":
         vectorizer = VectorizerFactory.create(self._components.config.vectorizer_config)
         
+        if logger:
+            MlFlowLogger.log_parameters(vars(self._components.config.vectorizer_config))
+            
         self._components.vectorizer = vectorizer
         return self
 
-    def with_vocabulary(self) -> "PipelineBuilder":        
+    def with_vocabulary(self) -> "PipelineBuilder":     
         vocabulary = VocabularyBuilderFactory.create(
             config=self._components.config.vocabulary_config,
             tokenizer_param=self._components.config.preprocessor_config.tokenizer_param
@@ -57,18 +63,21 @@ class PipelineBuilder:
         self._components.vocabulary = vocabulary
         return self
     
-    def with_similarity(self) -> "PipelineBuilder":
+    def with_similarity(self, logger: Optional[bool] = False) -> "PipelineBuilder":
         similarity = SimilaritySearchFactory.create(self._components.config.similarity_config)
-        
+
+        if logger:
+            MlFlowLogger.log_parameters(vars(self._components.config.similarity_config))
+
         self._components.similarity = similarity
         return self
     
-    def with_evaluator(self) -> "PipelineBuilder":
-        evaluator = EvaluatorFactory.create(
-            traininng_dataset=self._components.config.training_dataset, 
-            evaluation_dataset=self._components.config.evaluation_dataset
-        )
+    def with_evaluator(self, logger: Optional[bool] = False) -> "PipelineBuilder":
+        evaluator = EvaluatorFactory.create(self._components.config.evaluator_config)
         
+        if logger:
+            self._components.config.evaluator_config.logger = True
+
         self._components.evaluator = evaluator
         return self
     
@@ -83,7 +92,10 @@ class PipelineBuilder:
         self._components.logger = logger
         return self
     
-    def build(self) -> BasePipeline:
+    def build(self, logger: Optional[bool] = False) -> BasePipeline:
+        if logger:
+            self._components.config.logger = True
+
         pipeline = PipelineFactory.create(
             controller_type=self.controller_type,
             config=self._components.config
@@ -103,14 +115,14 @@ if __name__ == "__main__":
 
     pipeline = (
         PipelineBuilder(controller_type=ControllerType.TRAINING)
-        # .with_logger("information-retrieval", "IRS", "development")
+        .with_logger("information-retrieval", "IRS", "development")
         .with_config(PIPELINE_DEFAULT_CONFIG)
-        .with_preprocessor()
-        .with_vectorizer()
+        .with_preprocessor(logger=True)
+        .with_vectorizer(logger=True)
         .with_vocabulary()
         .with_similarity()
-        .with_evaluator()
-        .build()
+        .with_evaluator(logger=True)
+        .build(logger=True)
     )
 
     score = pipeline.run()
