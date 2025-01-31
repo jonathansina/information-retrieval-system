@@ -236,6 +236,8 @@ body {
 
     border-radius: 30px;
     margin-bottom: 10px;
+
+    z-index: 60;
 }
 
 .retrieved_item:focus {
@@ -266,6 +268,7 @@ body {
 
 .retrieval_button--active {
     opacity: 1;
+    z-index: 60;
 }
 
 .retrieval_button--rotate {
@@ -273,23 +276,21 @@ body {
     transform: rotate(360deg);
 }
 
-#blur {
+.blur {
     position: fixed;
     top: 0;
     right: 0;
     background-color: transparent;
     width: 100vw;
     height: 100vh;
-    z-index: -50;
+    z-index: -1260;
 
     opacity: 0;
-    transition: all 0.5s ease;
 }
 
 .blured {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    transition-duration: 2s;
     opacity: 1;
     z-index: 50;
 }
@@ -308,6 +309,10 @@ body {
     justify-content: center;
 
     z-index: -10;
+}
+
+.retrieval_result_focused--active {
+    z-index: 60;
 }
 
 .retrieved_item_table {
