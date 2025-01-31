@@ -87,7 +87,7 @@ VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
 
 
 SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
-    metrics="euclidean",
+    metrics="cosine",
     metrics_param={}
 )
 
@@ -99,7 +99,8 @@ VOCABULARY_DEFAULT_CONFIG = VocabularyConfig(
 
 EVALUATOR_DEFAULT_CONFIG = EvaluatorConfig(
     training_dataset=training_dataset, 
-    evaluation_dataset=evaluation_dataset
+    evaluation_dataset=evaluation_dataset, 
+    k=5
 )
 
 

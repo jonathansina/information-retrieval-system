@@ -48,6 +48,7 @@ class VocabularyConfig:
 
 @dataclass
 class EvaluatorConfig:
+    k: int
     training_dataset: pd.DataFrame
     evaluation_dataset: pd.DataFrame
     logger: Optional[bool] = None

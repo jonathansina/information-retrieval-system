@@ -20,7 +20,7 @@ class SimilaritySearchRegistry:
 
 ### Registering Preprocessors ###
 SimilaritySearchRegistry.register("cosine", distance.cosine)
-SimilaritySearchRegistry.register("euclidean", distance.euclidean)
 SimilaritySearchRegistry.register("jaccard", distance.jaccard)
 SimilaritySearchRegistry.register("hamming", distance.hamming)
+SimilaritySearchRegistry.register("euclidean", distance.euclidean)
 SimilaritySearchRegistry.register("minkowski", distance.minkowski)

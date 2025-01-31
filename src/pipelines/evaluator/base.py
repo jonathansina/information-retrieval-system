@@ -2,7 +2,6 @@ import sys
 from typing import List, Tuple, Dict, Any
 
 import numpy as np
-from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
 from path_handler import PathManager
@@ -20,34 +19,70 @@ class BaseEvaluator:
     
     @EvaluatorLogger.observe
     def evaluate(self, search_result: List[List[int]]) -> float:
-        true_classes = self.config.evaluation_dataset["category"]
-        report, confusion_matrix = self._get_classification_result(search_result, true_classes)
-        mrr_score = self._get_mean_reciprocal_rank(search_result, true_classes)
+        relevant_classes = self.config.evaluation_dataset["category"]
+        report = self._get_classification_result(search_result, relevant_classes)
+        mrr_score = self._get_mean_reciprocal_rank(search_result, relevant_classes)
+        precision = self._calculate_precision_at_k(search_result, relevant_classes, self.config.k)
+        recall = self._calculate_recall_at_k(search_result, relevant_classes, self.config.k)
         
         return {
             "mrr_score": mrr_score,
-            "classification_report": report,
-            "confusion_matrix": confusion_matrix
+            "precision_score": precision,
+            "recall_score": recall,
+            "classification_report": report
         }
         
-    def _get_classification_result(self, search_result: List[List[int]], true_classes: List[int]) -> Tuple[Dict[str, Any], np.ndarray]:
+    def _get_classification_result(self, search_result: List[List[int]], relevant_classes: List[int]) -> Dict[str, Any]:
         first_neighbor_indices = [neighbors[0] for neighbors in search_result]
-        predicted_classes = self.config.training_dataset["category"][first_neighbor_indices]
+        retrieved_classes = self.config.training_dataset["category"][first_neighbor_indices]
         
-        confusion_matrix = self._get_confusion_matrix(true_classes, predicted_classes)
-        report = classification_report(true_classes, predicted_classes, zero_division=1, output_dict=True)
-        return report, confusion_matrix
+        report = classification_report(relevant_classes, retrieved_classes, zero_division=1, output_dict=True)
+        return report
         
-    def _get_mean_reciprocal_rank(self, search_result: List[List[int]], true_classes: List[int]) -> float:
+    def _get_mean_reciprocal_rank(self, search_result: List[List[int]], relevant_classes: List[int]) -> float:
         reciprocal_ranks = []
         for query_idx, neighbors in enumerate(search_result):
             for rank, neighbor_idx in enumerate(neighbors):
-                if self.config.training_dataset["category"][neighbor_idx] == true_classes[query_idx]:
+                if self.config.training_dataset["category"][neighbor_idx] == relevant_classes[query_idx]:
                     reciprocal_ranks.append(1 / (rank + 1))
                     break
             else:
                 reciprocal_ranks.append(0)
         return sum(reciprocal_ranks) / len(reciprocal_ranks)
     
-    def _get_confusion_matrix(self, true_classes: List[int], predicted_classes: List[int]) -> np.ndarray:
-        return confusion_matrix(true_classes, predicted_classes)
+    def _calculate_precision_at_k(self, search_results, relevant_classes, k):
+        total_precision = 0.0
+        num_samples = len(search_results)
+
+        for retrieved_docs, relevant_docs in zip(search_results, relevant_classes):
+            precision_at_k = self._get_precision_score(retrieved_docs, relevant_docs, k)
+            total_precision += precision_at_k
+
+        return total_precision / num_samples
+
+    def _calculate_recall_at_k(self, search_results, relevant_classes, k):
+        total_recall = 0.0
+        num_samples = len(search_results)
+
+        for retrieved_docs, relevant_docs in zip(search_results, relevant_classes):
+            recall_at_k = self._get_recall_score(retrieved_docs, relevant_docs, k)
+            total_recall += recall_at_k
+
+        return total_recall / num_samples
+
+    def _get_precision_score(self, retrieved_docs, relevant_docs, k):
+        if k > len(retrieved_docs):
+            k = len(retrieved_docs)
+        
+        top_k_docs = self.config.training_dataset["category"][retrieved_docs[:k]]
+        relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
+        return relevant_count / k
+    
+    def _get_recall_score(self, retrieved_docs, relevant_docs, k):
+        if k > len(retrieved_docs):
+            k = len(retrieved_docs)
+
+        top_k_docs = self.config.training_dataset["category"][retrieved_docs[:k]]
+        relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
+        
+        return relevant_count / len(relevant_docs)

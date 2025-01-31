@@ -38,8 +38,10 @@ class EvaluatorLogger(BaseLogger):
             metrics = func(*args, **kwargs)
             
             if args[0].config.logger:
-                cls._log_metric("MRR Score", metrics["mrr_score"])
                 cls._log_report(metrics["classification_report"])
+                cls._log_metric("MRR Score", metrics["mrr_score"])
+                cls._log_metric(f"Recall {args[0].config.k} Score", metrics["recall_score"])
+                cls._log_metric(f"Precision {args[0].config.k} Score", metrics["precision_score"])
                 
             return metrics
         return decorator
