@@ -4,8 +4,10 @@ from typing import Literal, Optional
 
 @dataclass
 class AugmenterConfig:
-    source_langugae: str
-    destination_language: str
+    paraphrase: bool
+    replacer: bool
+    paraphraser_config: Optional["ParaphraserConfig"] = None
+    replacer_config: Optional["ReplacorConfig"] = None
     save_path: Optional[str] = None
     
 
@@ -21,4 +23,12 @@ class ParaphraserConfig:
     diversity_penalty: float
     no_repeat_ngram_size: int
     temperature: float
-    max_length: int
+    source_langugae: str
+    destination_language: str
+    
+
+@dataclass
+class ReplacorConfig:
+    probability: float
+    num_augmentations: int
+    synonyms_file: str

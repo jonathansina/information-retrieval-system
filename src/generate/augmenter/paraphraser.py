@@ -1,6 +1,10 @@
 import sys
+import asyncio
+from typing import List
 
 import torch
+import pandas as pd
+from alive_progress import alive_bar
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from path_handler import PathManager
@@ -9,6 +13,7 @@ path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
 from src.generate.config.config import ParaphraserConfig
+from src.generate.augmenter.translator import Translator
 
 
 class Paraphraser:
@@ -17,6 +22,16 @@ class Paraphraser:
         self.tokenizer = AutoTokenizer.from_pretrained(config.model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(config.model_name).to(config.device)
 
+    async def _augment_query(self, text) -> List[str]:
+        translated_text = await Translator.translate(text, self.config.source_langugae, self.config.destination_language)
+        paraphrased_sentences = self._paraphrase(translated_text)
+
+        translated_sentences = await asyncio.gather(
+            *[Translator.translate(sentence, self.config.destination_language, self.config.source_langugae) for sentence in paraphrased_sentences]
+        )
+        
+        return translated_sentences
+    
     def _tokenize(self, inputs: str) -> torch.Tensor:
         tokenized_inputs = self.tokenizer(
             f'paraphrase: {inputs}',
@@ -29,7 +44,7 @@ class Paraphraser:
         tokenized_inputs = tokenized_inputs.input_ids.to(self.config.device)  
         return tokenized_inputs
         
-    def paraphrase(self, inputs: str) -> str:
+    def _paraphrase(self, inputs: str) -> str:
         tokenized_inputs = self._tokenize(inputs)
         
         encoded_outputs = self.model.generate(
@@ -50,6 +65,22 @@ class Paraphraser:
         )
 
         return decoded_outputs
+    
+    async def augment(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        augmented_rows = []
+
+        with alive_bar(dataset.shape[0]) as bar:   
+            for _, row in dataset.iterrows():
+                question = row["question"]
+                paraphrased_questions = await self._augment_query(question)
+
+                for pq in paraphrased_questions:
+                    augmented_rows.append({"question": pq, "answer": row["answer"], "category": row["category"]})
+                    
+                bar()
+                
+        augmented_df = pd.DataFrame(augmented_rows)
+        return augmented_df
 
 
 if __name__ == "__main__":
