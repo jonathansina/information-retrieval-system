@@ -14,11 +14,11 @@ PARAPHRASER_DEFAULT_CONFIG = ParaphraserConfig(
     max_length=128,
     temperature=0.8,
     repetition_penalty=1.0,
-    num_return_sequences=5,
+    num_return_sequences=10,
     no_repeat_ngram_size=2,
-    num_beams=5,
+    num_beams=10,
     num_beam_groups=5,
-    diversity_penalty=3.0
+    diversity_penalty=4.0
 )
 
 AUGMENTER_DEFAULT_CONFIG = AugmenterConfig(

@@ -51,10 +51,10 @@ class BaseAugmenter:
             
         return augmented_dataframe
     
-    
+
 if __name__ == "__main__":
-    from src.generate.config.default import AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG
     from src.generate.augmenter.factory import AugmenterFactory
+    from src.generate.config.default import AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG
     
     augmenter = AugmenterFactory.create(AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG)
     asyncio.run(augmenter.augment(pd.read_csv("../../data/digikala_faq.csv"), save=True))

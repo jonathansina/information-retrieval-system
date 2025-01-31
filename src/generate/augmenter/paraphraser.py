@@ -11,10 +11,6 @@ sys.path.append(str(path_manager.get_base_directory()))
 from src.generate.config.config import ParaphraserConfig
 
 
-tokenizer = AutoTokenizer.from_pretrained("humarin/chatgpt_paraphraser_on_T5_base")
-model = AutoModelForSeq2SeqLM.from_pretrained("humarin/chatgpt_paraphraser_on_T5_base")
-
-
 class Paraphraser:
     def __init__(self, config: ParaphraserConfig):
         self.config = config
