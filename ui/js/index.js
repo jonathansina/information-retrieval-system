@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', event => {
 	const queryInput = document.getElementById('query');
 	const chathistory = document.querySelector('.history');
 	let query = '';
+	const blur = document.querySelector('.blur');
 	const retrievalButton = document.querySelector('.retrieval_button');
 	const retrievalResult = document.querySelector('.retrieval_result');
 	const retrievalFocused = document.querySelector('.retrieval_result_focused');
@@ -123,15 +124,45 @@ document.addEventListener('DOMContentLoaded', event => {
 		document
 			.querySelectorAll('.retrieved_item_table')
 			[index].classList.add('retrieved_item_table--active');
+
+		if (!blur.classList.contains('blured')) {
+			retrievalFocused.classList.add('retrieval_result_focused--active');
+			blur.classList.add('blured');
+		}
 	}
 
 	function handleItemBlur(index) {
 		// Logic to execute when the item loses focus
-		// console.log(`Item ${index} lost focus`);
-		// Example: Reset some styles or state
-		document
-			.querySelectorAll('.retrieved_item_table')
-			[index].classList.remove('retrieved_item_table--active');
+		const currentItemTable = document.querySelectorAll('.retrieved_item_table')[index];
+
+		// Add class to indicate that the item is being blurred
+		currentItemTable.classList.remove('retrieved_item_table--active');
+
+		// Set a flag to track if another item has gained focus
+		let focusGained = false;
+
+		// Function to check if focus has moved to another item
+		const checkFocus = () => {
+			const activeElement = document.activeElement;
+			const retrievedItems = document.querySelectorAll('.retrieved_item');
+
+			// Check if the currently focused element is one of the retrieved items
+			for (let item of retrievedItems) {
+				if (item === activeElement) {
+					focusGained = true;
+					break;
+				}
+			}
+
+			// If no item has gained focus, execute special logic
+			if (!focusGained) {
+				retrievalFocused.classList.remove('retrieval_result_focused--active');
+				blur.classList.remove('blured');
+			}
+		};
+
+		// Use setTimeout to allow the blur event to complete before checking focus
+		setTimeout(checkFocus, 0);
 	}
 
 	function resizeDiv(div) {

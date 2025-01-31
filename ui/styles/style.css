@@ -144,10 +144,10 @@ body {
     padding: 10px;
     gap: 10px;
     width: 40vw;
-    height: 70px;
+    height: 4vw;
     margin-bottom: 2vw;
     
-    background-color: white;
+    background-color: #262626;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
     border: 1px solid #ccc;
@@ -167,6 +167,8 @@ body {
     padding: 10px 10px;
     text-align: right;
     direction: rtl;
+    background-color: #262626;
+    color: white;
 }
 
 .send_button {
@@ -177,7 +179,7 @@ body {
     outline: none;
     cursor: pointer;
 
-    color: black;
+    color: white;
     text-align: right;
     direction: rtl;
 
@@ -188,12 +190,17 @@ body {
     transform: rotate(-90deg);
 }
 
+.send_button img {
+    filter: invert(100%);
+}
+
 /*- RETRIEVAL */
 .retrieval {
     width: 20vw;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: end;
+    padding-right: 1vw;
 }
 
 .retrieval_result {
@@ -201,7 +208,7 @@ body {
     height: 80%;
 
     position: fixed;
-    bottom: 7vw;
+    bottom: 2vw;
 
     display: flex;
     flex-direction: column;
@@ -213,7 +220,7 @@ body {
 }
 
 .retrieval_result--active {
-    transform: translateY(-40px);
+    transform: translateY(-6vw);
     z-index: 123456;
     opacity: 1;
 }
@@ -248,15 +255,16 @@ body {
     position: fixed;
     bottom: 2vw;
 
-    width: 5vw;
-    height: 5vw;
+    width: 4vw;
+    height: 4vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
     opacity: 0;
-    background-color: wheat;
+    background-color: #686B86;
+    color: white;
 
     border: none;
     border-radius: 50%;
