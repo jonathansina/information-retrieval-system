@@ -79,6 +79,7 @@ body {
 
 .history {
     height: 0;
+    width: auto;
     transition: all 0.5s ease;
 }
 
