@@ -58,4 +58,3 @@ if __name__ == "__main__":
     
     augmenter = AugmenterFactory.create(AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG)
     asyncio.run(augmenter.augment(pd.read_csv("../../data/digikala_faq.csv"), save=True))
-    
