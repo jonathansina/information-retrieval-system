@@ -8,7 +8,7 @@ import time
 def get_ir_results(query):
     return [
         {
-            "question": "q1",
+            "question": "از 3 فوریه 2025، شهروندان تاجیکستان‌ و ایران  با سفر هوایی بدون  ویزا و اقامت 30 روز از هر دوره 90 روزه در تمامی شهرها می‌توانند سفر بکنند.",
             "answer": "a1",
             "category": "c1"
         },

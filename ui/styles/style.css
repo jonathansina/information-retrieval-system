@@ -345,24 +345,37 @@ body {
 }
 
 .retrieved_item_table {
-    margin: 0 auto 1vw;
-    direction: rtl;
-    width: 60vw;
-    border-radius: 25px;
     display: none;
     opacity: 0;
     transition: all 0.5s ease;
+    color: #161616;
+}
+
+.retrieved_item_table tr {
+    width:100%;
+    background: #FFFFFF;
+    
+    &:nth-of-type(odd) {
+        background: #BBBBBB;
+    }
 }
 
 .retrieved_item_table--active {
     display: table;
+    border-spacing: 0;
+    border-collapse: collapse;
+    direction: rtl;
+    width: 60vw;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 0;
     opacity: 1;
 }
 
 .retrieved_item_table td {
-    padding: 5px 0;
+    padding: 0.5vw;
     width: auto;
     text-align: center;
-    border: 1px solid #282C34;
     font-size: var(--sm);
+    border-left: 1px solid #161616;
 }

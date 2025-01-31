@@ -37,11 +37,8 @@ document.addEventListener('DOMContentLoaded', event => {
 			.join('')}`;
 		retrievalFocused.innerHTML = `${data.ir_results
 			.map(
-				result => `<table class="retrieved_item_table">
-				<tr><td>سوال</td><td>${result.question}</td></tr>
-				<tr><td>پاسخ</td><td>${result.answer}</td></tr>
-				<tr><td>دسته‌بندی</td><td>${result.category}</td></tr>
-				</table>`
+				result =>
+					`<table class="retrieved_item_table"><tr><td>سوال</td><td>${result.question}</td></tr><tr><td>پاسخ</td><td>${result.answer}</td></tr><tr><td>دسته‌بندی</td><td>${result.category}</td></tr></table>`
 			)
 			.join('')}`;
 
