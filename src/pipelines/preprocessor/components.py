@@ -54,8 +54,8 @@ class InformalNormalizerComponents(PreprocessorComponents):
 
 
 class StopwordsRemoverComponents(PreprocessorComponents):
-    def __init__(self, stopwords: List[str]):
-        self.stopwords = set(stopwords)
+    def __init__(self, stopwords_list: List[str]):
+        self.stopwords_list = set(stopwords_list)
 
     def process(self, tokens: List[str]) -> List[str]:
-        return [token for token in tokens if token not in self.stopwords]
+        return [token for token in tokens if token not in self.stopwords_list]

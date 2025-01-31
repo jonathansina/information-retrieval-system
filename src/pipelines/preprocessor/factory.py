@@ -12,6 +12,7 @@ from src.pipelines.preprocessor.components import (
     NormalizerComponents, 
     LemmatizerComponents, 
     PreprocessorComponents,
+    StopwordsRemoverComponents,
     InformalNormalizerComponents, 
 )
 from src.pipelines.config.config import PreprocessorConfig
@@ -36,9 +37,17 @@ class PreprocessorFactory:
         if config.normalizer:
             normalizer = PreprocessorRegistry.get_registered("normalizer")(**config.normalizer_param)
             steps.append(NormalizerComponents(normalizer))
-        
+
         word_tokenizer = PreprocessorRegistry.get_registered("tokenizer")(**config.tokenizer_param)
         steps.append(TokenizerComponents(word_tokenizer))
+        
+        if config.stopwords:
+            stopwords_list = []
+
+            with open(config.stopwords_file, 'r', encoding='utf-8') as file:
+                stopwords_list = [line.strip() for line in file.readlines()]
+        
+            steps.append(StopwordsRemoverComponents(stopwords_list))
         
         if config.stemmer:
             stemmer = PreprocessorRegistry.get_registered("stemmer")()
@@ -49,4 +58,3 @@ class PreprocessorFactory:
             steps.append(LemmatizerComponents(lemmatizer))
             
         return steps
-        

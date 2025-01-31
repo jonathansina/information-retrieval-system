@@ -7,6 +7,7 @@ import pandas as pd
 @dataclass
 class PreprocessorConfig:
     tokenizer_param: Dict[str, Any]
+    stopwords: Optional[bool] = False
     normalizer: Optional[bool] = False
     stemmer: Optional[bool] = False
     lemmatizer: Optional[bool] = False
@@ -14,6 +15,7 @@ class PreprocessorConfig:
     normalizer_param: Optional[Dict[str, Any]] = None
     lemmatizer_param: Optional[Dict[str, Any]] = None
     informal_normalizer_param: Optional[Dict[str, Any]] = None
+    stopwords_file: Optional[str] = None
     
     def __post_init__(self):
         if self.lemmatizer and self.stemmer:

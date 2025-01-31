@@ -20,8 +20,8 @@ training_dataset = pd.read_csv("../../../data/augmented_dataset.csv")
 evaluation_dataset = pd.read_csv("../../../data/test_digikala_faq.csv")
     
 tokenizer_param = {
-    "join_verb_parts": True,
-    "join_abbreviations": True,
+    "join_verb_parts": False,
+    "join_abbreviations": False,
     "separate_emoji": True,
     "replace_links": True,
     "replace_ids": True,
@@ -30,14 +30,14 @@ tokenizer_param = {
 }
 
 normalizer_param = {
-    "correct_spacing": True,
+    "correct_spacing": False,
     "remove_diacritics": True,
     "remove_specials_chars": True,
     "decrease_repeated_chars": True,
     "persian_style": True,
     "persian_numbers": True,
     "unicodes_replacement": True,
-    "seperate_mi": True
+    "seperate_mi": False
 }
 
 informal_normalizer_param = {
@@ -72,11 +72,13 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
     tokenizer_param=tokenizer_param,
     informal_normalizer=True,
     normalizer=True,
-    stemmer=False, 
+    stemmer=True, 
     lemmatizer=False,
+    stopwords=True,
     informal_normalizer_param=informal_normalizer_param,
     normalizer_param=normalizer_param,
     lemmatizer_param=lemmatizer_param,
+    stopwords_file="../../../data/stops.txt"
 )
 
 
