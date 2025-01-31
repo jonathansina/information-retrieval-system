@@ -76,19 +76,26 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
 
     width: 100vw;
     height: 3vw;
 
-    font-size: calc(var(--sm) * 1.2);
-    color: white;
-
+    font-size: calc(var(--sm) * 0.8);
+    color: rgba(255, 255, 255, 0.8);
+    
     background-color: #161616;
 }
 
 .header div {
-    margin: 0 1vw;
+    margin: 0.25vw;
+    margin-top: 1vw;
+}
+
+.header .name {
+    margin-left: 1vw;
+    font-size: calc(var(--sm) * 2);
+    color: white;
 }
 
 .chat {
@@ -269,7 +276,7 @@ body {
 }
 
 .retrieved_item:focus {
-    margin-left: 20px;
+    margin-left: 40px;
 }
 
 .retrieval_button {
