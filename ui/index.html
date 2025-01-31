@@ -4,21 +4,28 @@
 		<title>Query Submission</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-		<!-- <link rel="stylesheet" href="/ui/styles/style.css" />
-		<script src="/ui/js/index.js"></script> -->
-		<link rel="stylesheet" href="styles/style.css" />
-		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="/ui/styles/style.css" />
+		<script src="/ui/js/index.js"></script>
+		<!-- <link rel="stylesheet" href="styles/style.css" />
+		<script src="js/index.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 	</head>
 	<body>
-		<div class="retrieval">
-			<button type="button" class="retrieval_button">Retrieval</button>
+		<div class="header">
+			<div>Digikala Information Retrieval</div>
+			<div>Maram</div>
 		</div>
 
+		<div class="retrieval">
+			<button type="button" class="retrieval_button">بازیابی</button>
+		</div>
+
+		<div class="blur"></div>
+		<div class="retrieval_result_focused"></div>
 		<div class="retrieval_result"></div>
 
 		<div class="chat">
-			<div class="history"></div>
+			<div class="history scroll"></div>
 			<form id="query-form">
 				<input
 					type="text"
@@ -28,7 +35,8 @@
 					required
 				/>
 				<button class="send_button" type="submit">
-					<img src="images/send.png" alt="ارسال" />
+					<img src="/ui/images/send.png" alt="ارسال" />
+					<!-- <img src="images/send.png" alt="ارسال" /> -->
 				</button>
 			</form>
 		</div>
