@@ -14,9 +14,20 @@ from src.pipelines.type_hint import ControllerType
 from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
 from src.pipelines.pipeline.builder import PipelineBuilder
 
-# Mock functions for IR and LLM
-def get_ir_results(query):
-    pipeline = (
+pipeline = (
+    PipelineBuilder(controller_type=ControllerType.TRAINING)
+    .with_logger("information-retrieval", "IRS", "development")
+    .with_config(PIPELINE_DEFAULT_CONFIG)
+    .with_preprocessor(True)
+    .with_vectorizer(True)
+    .with_vocabulary()
+    .with_similarity()
+    .with_evaluator(True)
+    .build(True)
+)
+pipeline.run()
+
+inference_pipeline = (
         PipelineBuilder(controller_type=ControllerType.INFERENCE)
         .with_logger("information-retrieval", "IRS", "development")
         .with_config(PIPELINE_DEFAULT_CONFIG)
@@ -26,8 +37,11 @@ def get_ir_results(query):
         .with_similarity()
         .with_evaluator()
         .build()
-    )
-    result = pipeline.run(query)
+)
+
+# Mock functions for IR and LLM
+def get_ir_results(query):
+    result = inference_pipeline.run(query)
     
     response = [
         {
@@ -49,7 +63,7 @@ app = Flask(
     static_folder="ui"
 )
 CORS(app)  # Enable CORS
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="http://127.0.0.1:5000")
 
 @app.route('/submit', methods=['POST'])
 def submit_query():
@@ -83,19 +97,4 @@ def on_connect():
     print("Client connected")
 
 if __name__ == '__main__':
-    ### EXAMPLE OF USAGE ###
-    # 1. FIRST TRAIN THE MODEL WITH LOGGER ENABLED
-    pipeline = (
-        PipelineBuilder(controller_type=ControllerType.TRAINING)
-        .with_logger("information-retrieval", "IRS", "development")
-        .with_config(PIPELINE_DEFAULT_CONFIG)
-        .with_preprocessor(True)
-        .with_vectorizer(True)
-        .with_vocabulary()
-        .with_similarity()
-        .with_evaluator(True)
-        .build(True)
-    )
-    pipeline.run()
-    
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)  # Adjust as needed
