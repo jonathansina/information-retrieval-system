@@ -37,7 +37,7 @@ class BaseAugmenter:
 
 if __name__ == "__main__":
     from src.generate.augmenter.factory import AugmenterFactory
-    from src.generate.config.default import AUGMENTER_DEFAULT_CONFIG, PARAPHRASER_DEFAULT_CONFIG
+    from src.generate.config.default import AUGMENTER_DEFAULT_CONFIG
     
     augmenter = AugmenterFactory.create(AUGMENTER_DEFAULT_CONFIG)
     asyncio.run(augmenter.augment(pd.read_csv(path_manager.get_custom_path("data/digikala_faq.csv", based="base"), index_col=0), save=True))

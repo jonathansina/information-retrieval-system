@@ -1,4 +1,5 @@
 import sys
+from typing import Dict, List
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -54,17 +55,17 @@ class TrainingPipeline(BasePipeline):
 @PipelineRegistry.register(ControllerType.INFERENCE)
 class InferencePipeline(BasePipeline):
     @PipelineLogger.observe
-    def run(self, query: str) -> float:
+    def run(self, query: str) -> Dict[str, List[str]]:
         series_query = pd.Series([query])
         vectorized_corpus = self.vocabulary(None)
         
         preprocessed_query = self.preprocessor.process(series_query)
         vectorized_query = self.vectorizer.vectorize(preprocessed_query)
         
-        retrieved_index = self.similarity.search(vectorized_query, vectorized_corpus)[0]
+        retrieved_indices = self.similarity.search(vectorized_query, vectorized_corpus)[0]
 
         return {
-            "retrieved_question": self.config.training_dataset["question"][retrieved_index],
-            "retrieved_answer": self.config.training_dataset["answer"][retrieved_index], 
-            "retrieved_category": self.config.training_dataset["category"][retrieved_index],
+            "retrieved_question": self.config.training_dataset["question"][retrieved_indices].tolist(),
+            "retrieved_answer": self.config.training_dataset["answer"][retrieved_indices].tolist(), 
+            "retrieved_category": self.config.training_dataset["category"][retrieved_indices].tolist(),
         }

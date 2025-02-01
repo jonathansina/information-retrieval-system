@@ -1,4 +1,6 @@
+import os
 import sys
+from dotenv import load_dotenv
 
 import pandas as pd
 
@@ -16,8 +18,10 @@ from src.pipelines.config.config import (
     SimilaritySearchConfig
 )
 
-training_dataset = pd.read_csv("../../../data/augmented_dataset.csv")
-evaluation_dataset = pd.read_csv("../../../data/test_digikala_faq.csv")
+
+load_dotenv()
+training_dataset = pd.read_csv(path_manager.get_custom_path("data/augmented_dataset.csv", based="base"))
+evaluation_dataset = pd.read_csv(path_manager.get_custom_path("data/test_digikala_faq.csv", based="base"))  
     
 tokenizer_param = {
     "join_verb_parts": False,
@@ -57,28 +61,30 @@ metrics_param ={
 
 sentence_transformer_param = {
     "model_name_or_path": "sentence-transformers/LaBSE",
-    "token": "<USE YOUR OWN>"
+    # "model_name_or_path": 'sentence-transformers/all-MiniLM-L6-v2',
+    # "model_name_or_path": 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+    "token": os.getenv('TOKEN') 
 }
 
 tf_idf_param = {
     "max_features": 10000,
-    # "ngram_range": (1, 1),
-    # "max_df": 0.85,
+    # "ngram_range": (2, 2),
+    "max_df": 0.9,
     # "min_df": 0.01
 }
 
 
 PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
     tokenizer_param=tokenizer_param,
-    informal_normalizer=True,
-    normalizer=True,
-    stemmer=True, 
+    informal_normalizer=False,
+    normalizer=False,
+    stemmer=False, 
     lemmatizer=False,
     stopwords=True,
     informal_normalizer_param=informal_normalizer_param,
     normalizer_param=normalizer_param,
     lemmatizer_param=lemmatizer_param,
-    stopwords_file="../../../data/stops.txt"
+    stopwords_file=path_manager.get_custom_path("data/stops.txt", based="base")
 )
 
 
@@ -90,19 +96,21 @@ VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
 
 SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
     metrics="cosine",
-    metrics_param={}
+    metrics_param={
+        "n_neighbors": 10,
+    }
 )
 
 
 VOCABULARY_DEFAULT_CONFIG = VocabularyConfig(
     save=True,
-    save_path="../../../data/vocabulary.txt"
+    save_path=path_manager.get_custom_path("data/vocabulary.txt", based="base")
 )
 
 EVALUATOR_DEFAULT_CONFIG = EvaluatorConfig(
+    k=1,
     training_dataset=training_dataset, 
-    evaluation_dataset=evaluation_dataset, 
-    k=5
+    evaluation_dataset=evaluation_dataset
 )
 
 

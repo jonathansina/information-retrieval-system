@@ -25,6 +25,6 @@ class KNNSimilarityStrategy(SimilaritySearchStrategy):
         else:
             filtered_indices = []
             for dist, idx in zip(distances, indices):
-                filtered_idx = [i for d, i in zip(dist, idx) if d <= threshold]
+                filtered_idx = [i for d, i in zip(dist, idx) if d >= threshold]
                 filtered_indices.append(filtered_idx)
             return filtered_indices

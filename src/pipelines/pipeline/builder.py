@@ -173,5 +173,5 @@ if __name__ == "__main__":
     #     .with_evaluator()
     #     .build()
     # )
-    # result = pipeline.run("بهترین لپ تاپ چی هست؟")
+    # result = pipeline.run("آیا ارسال سفارشات به شهرهای کوچک نیز انجام می‌شود؟,")
     # print(result)
