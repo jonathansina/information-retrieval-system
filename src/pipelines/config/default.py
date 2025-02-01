@@ -83,8 +83,8 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
 
 
 VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
-    vectorizer="tf-idf", 
-    vectorizer_param=tf_idf_param
+    vectorizer="sentence-transformer", 
+    vectorizer_param=sentence_transformer_param
 )
 
 

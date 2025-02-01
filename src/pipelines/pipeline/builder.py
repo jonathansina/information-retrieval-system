@@ -133,6 +133,17 @@ class PipelineBuilder:
 
 if __name__ == "__main__":
     from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
+    from huggingface_hub import login
+    from dotenv import load_dotenv
+    import os
+    
+    load_dotenv(
+        str(path_manager.get_base_directory() / ".env")
+    )
+    
+    login(
+        token=os.getenv("TOKEN")
+    )
 
     ### EXAMPLE OF USAGE ###
     # 1. FIRST TRAIN THE MODEL WITH LOGGER ENABLED

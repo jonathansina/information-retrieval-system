@@ -3,36 +3,42 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import threading
 import time
+import sys
+
+from path_handler import PathManager
+
+path_manager = PathManager()
+sys.path.append(str(path_manager.get_base_directory()))
+
+from src.pipelines.type_hint import ControllerType
+from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
+from src.pipelines.pipeline.builder import PipelineBuilder
 
 # Mock functions for IR and LLM
 def get_ir_results(query):
-    return [
+    pipeline = (
+        PipelineBuilder(controller_type=ControllerType.INFERENCE)
+        .with_logger("information-retrieval", "IRS", "development")
+        .with_config(PIPELINE_DEFAULT_CONFIG)
+        .with_preprocessor()
+        .with_vectorizer()
+        .with_vocabulary()
+        .with_similarity()
+        .with_evaluator()
+        .build()
+    )
+    result = pipeline.run(query)
+    
+    response = [
         {
-            "question": "از 3 فوریه 2025، شهروندان تاجیکستان‌ و ایران  با سفر هوایی بدون  ویزا و اقامت 30 روز از هر دوره 90 روزه در تمامی شهرها می‌توانند سفر بکنند.",
-            "answer": "a1",
-            "category": "c1"
-        },
-        {
-            "question": "q2",
-            "answer": "a2",
-            "category": "c2"
-        },
-        {
-            "question": "q3",
-            "answer": "a3",
-            "category": "c3"
-        },
-        {
-            "question": "q4",
-            "answer": "a4",
-            "category": "c4"
-        },
-        {
-            "question": "q5",
-            "answer": "a5",
-            "category": "c5"
-        },
+            "question": result["retrieved_question"][i],
+            "answer": result["retrieved_answer"][i],
+            "category": result["retrieved_category"][i],
+        }
+        for i in range(len(result["retrieved_question"]))
     ]
+    
+    return response
 
 def get_llm_response(query):
     time.sleep(2)  # Simulate delay
@@ -77,4 +83,19 @@ def on_connect():
     print("Client connected")
 
 if __name__ == '__main__':
+    ### EXAMPLE OF USAGE ###
+    # 1. FIRST TRAIN THE MODEL WITH LOGGER ENABLED
+    pipeline = (
+        PipelineBuilder(controller_type=ControllerType.TRAINING)
+        .with_logger("information-retrieval", "IRS", "development")
+        .with_config(PIPELINE_DEFAULT_CONFIG)
+        .with_preprocessor(True)
+        .with_vectorizer(True)
+        .with_vocabulary()
+        .with_similarity()
+        .with_evaluator(True)
+        .build(True)
+    )
+    pipeline.run()
+    
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)  # Adjust as needed

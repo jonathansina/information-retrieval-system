@@ -171,3 +171,6 @@ cython_debug/
 .pypirc
 
 fonts/
+mlruns/
+mlartifacts/
+vocabulary.txt
