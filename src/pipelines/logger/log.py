@@ -12,7 +12,7 @@ from mlflow.tracking import MlflowClient
 class MlFlowLogger:
     """MlFlowLogger class for logging machine learning experiments using MLflow."""
     
-    mlflow.set_tracking_uri('http://localhost:5000')
+    mlflow.set_tracking_uri('http://localhost:9437')
     mlflow.enable_system_metrics_logging()
     mlflow_client = MlflowClient()
 

@@ -97,7 +97,7 @@ VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
 SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
     metrics="cosine",
     metrics_param={
-        "n_neighbors": 10,
+        "n_neighbors": 5,
     }, 
     # threshold=0.5
 )

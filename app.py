@@ -2,48 +2,98 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 import threading
-import time
+import sys
+
+from together import Together
+from path_handler import PathManager
+
+path_manager = PathManager()
+sys.path.append(str(path_manager.get_base_directory()))
+
+from src.pipelines.type_hint import ControllerType
+from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
+from src.pipelines.pipeline.builder import PipelineBuilder
+
+pipeline = (
+    PipelineBuilder(controller_type=ControllerType.TRAINING)
+    .with_logger("information-retrieval", "IRS", "development")
+    .with_config(PIPELINE_DEFAULT_CONFIG)
+    .with_preprocessor(True)
+    .with_vectorizer(True)
+    .with_vocabulary()
+    .with_similarity()
+    .with_evaluator(True)
+    .build(True)
+)
+pipeline.run()
+
+inference_pipeline = (
+        PipelineBuilder(controller_type=ControllerType.INFERENCE)
+        .with_logger("information-retrieval", "IRS", "development")
+        .with_config(PIPELINE_DEFAULT_CONFIG)
+        .with_preprocessor()
+        .with_vectorizer()
+        .with_vocabulary()
+        .with_similarity()
+        .with_evaluator()
+        .build()
+)
+
+client = Together(
+    api_key="92dd4356e04ea782af22b37f22673f1a69166f3c005ba97e3197c9997fd02721"
+)
+
+llm_prompt = '''
+--- Objective:
+You are a customer service expert. You must answer user's question using the provided set of questions and answers. 
+
+--- User Input:
+{query}
+
+--- Context:
+{retrieval}
+
+--- Rules:
+- Answer with concise and polite sentences in Persian.
+'''.strip()
 
 # Mock functions for IR and LLM
 def get_ir_results(query):
-    return [
+    result = inference_pipeline.run(query)
+    
+    response = [
         {
-            "question": "از 3 فوریه 2025، شهروندان تاجیکستان‌ و ایران  با سفر هوایی بدون  ویزا و اقامت 30 روز از هر دوره 90 روزه در تمامی شهرها می‌توانند سفر بکنند.",
-            "answer": "a1",
-            "category": "c1"
-        },
-        {
-            "question": "q2",
-            "answer": "a2",
-            "category": "c2"
-        },
-        {
-            "question": "q3",
-            "answer": "a3",
-            "category": "c3"
-        },
-        {
-            "question": "q4",
-            "answer": "a4",
-            "category": "c4"
-        },
-        {
-            "question": "q5",
-            "answer": "a5",
-            "category": "c5"
-        },
+            "question": result["retrieved_question"][i],
+            "answer": result["retrieved_answer"][i],
+            "category": result["retrieved_category"][i],
+        }
+        for i in range(len(result["retrieved_question"]))
     ]
+    
+    return response
 
-def get_llm_response(query):
-    time.sleep(2)  # Simulate delay
-    return f"LLM Response for {query}"
+def get_llm_response(query, ir_results):
+    
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": llm_prompt.format(
+                    retrieval=ir_results,
+                    query=query)
+            }
+        ],
+    )
+    
+    return response.choices[0].message.content
 
 app = Flask(
     __name__,
     static_folder="ui"
 )
 CORS(app)  # Enable CORS
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="http://127.0.0.1:5000")
 
 @app.route('/submit', methods=['POST'])
 def submit_query():
@@ -69,7 +119,7 @@ def process_query(query):
     ir_results = get_ir_results(query)
     socketio.emit('ir_results', {'ir_results': ir_results})
     
-    llm_response = get_llm_response(query)
+    llm_response = get_llm_response(query, ir_results)
     socketio.emit('llm_response', {'llm_response': llm_response})
 
 @socketio.on('connect')
