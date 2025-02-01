@@ -49,7 +49,7 @@ class BaseEvaluator:
                 reciprocal_ranks.append(0)
         return sum(reciprocal_ranks) / len(reciprocal_ranks)
     
-    def _calculate_precision_at_k(self, search_results, relevant_classes, k):
+    def _calculate_precision_at_k(self, search_results: List[List[int]], relevant_classes: List[int], k: int):
         total_precision = 0.0
         num_samples = len(search_results)
 
@@ -59,7 +59,7 @@ class BaseEvaluator:
 
         return total_precision / num_samples
 
-    def _calculate_recall_at_k(self, search_results, relevant_classes, k):
+    def _calculate_recall_at_k(self, search_results: List[List[int]], relevant_classes: List[int], k: int):
         total_recall = 0.0
         num_samples = len(search_results)
 
@@ -69,7 +69,7 @@ class BaseEvaluator:
 
         return total_recall / num_samples
 
-    def _get_precision_score(self, retrieved_docs, relevant_docs, k):
+    def _get_precision_score(self, retrieved_docs: List[List[int]], relevant_docs: List[int], k: int):
         if k > len(retrieved_docs):
             k = len(retrieved_docs)
         
@@ -77,7 +77,7 @@ class BaseEvaluator:
         relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
         return relevant_count / k
     
-    def _get_recall_score(self, retrieved_docs, relevant_docs, k):
+    def _get_recall_score(self, retrieved_docs: List[List[int]], relevant_docs: List[int], k: int):
         if k > len(retrieved_docs):
             k = len(retrieved_docs)
 
