@@ -29,6 +29,8 @@ class BaseAugmenter:
         if self.replacer:
             augmented_dataframe = self.replacer.replace(augmented_dataframe)
                 
+        augmented_dataframe.drop_duplicates(inplace=True, ignore_index=True)
+        
         if save:
             augmented_dataframe.to_csv(self.config.save_path, index=False)
             
