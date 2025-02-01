@@ -31,8 +31,12 @@ class BaseEvaluator:
             "classification_report": report
         }
         
-    def _get_classification_result(self, search_result: List[List[int]], relevant_classes: List[int]) -> Dict[str, Any]:
-        first_neighbor_indices = [neighbors[0] for neighbors in search_result]
+    def _get_classification_result(self, search_result: List[List[int]], relevant_classes: List[int]) -> Dict[str, Any]:   
+        try:         
+            first_neighbor_indices = [neighbors[0] for neighbors in search_result]
+        except:
+            return None
+        
         retrieved_classes = self.config.training_dataset["category"][first_neighbor_indices]
         
         report = classification_report(relevant_classes, retrieved_classes, zero_division=1, output_dict=True)
@@ -72,6 +76,9 @@ class BaseEvaluator:
     def _get_precision_score(self, retrieved_docs: List[List[int]], relevant_docs: List[int], k: int):
         if k > len(retrieved_docs):
             k = len(retrieved_docs)
+            
+        if k == 0:
+            return 0
         
         top_k_docs = self.config.training_dataset["category"][retrieved_docs[:k]]
         relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
@@ -81,6 +88,9 @@ class BaseEvaluator:
         if k > len(retrieved_docs):
             k = len(retrieved_docs)
 
+        if k == 0:
+            return 0
+        
         top_k_docs = self.config.training_dataset["category"][retrieved_docs[:k]]
         relevant_count = sum(1 for doc in top_k_docs if doc in relevant_docs)
         return relevant_count / len(relevant_docs)
