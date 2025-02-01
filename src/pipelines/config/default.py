@@ -89,8 +89,8 @@ PREPROCESSOR_DEFAULT_CONFIG = PreprocessorConfig(
 
 
 VECTORIZER_DEFAULT_CONFIG = VectorizerConfig(
-    vectorizer="sentence-transformer", 
-    vectorizer_param=sentence_transformer_param
+    vectorizer="tf-idf", 
+    vectorizer_param=tf_idf_param
 )
 
 
@@ -98,7 +98,8 @@ SIMILARITY_SEARCH_DEFAULT_CONFIG = SimilaritySearchConfig(
     metrics="cosine",
     metrics_param={
         "n_neighbors": 10,
-    }
+    }, 
+    # threshold=0.5
 )
 
 
