@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
+from dotenv import load_dotenv
 import threading
 import sys
+import os
 
 from together import Together
 from path_handler import PathManager
@@ -13,6 +15,10 @@ sys.path.append(str(path_manager.get_base_directory()))
 from src.pipelines.type_hint import ControllerType
 from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
 from src.pipelines.pipeline.builder import PipelineBuilder
+
+load_dotenv(
+    str(path_manager.get_base_directory() / ".env")
+)
 
 pipeline = (
     PipelineBuilder(controller_type=ControllerType.TRAINING)
@@ -40,7 +46,7 @@ inference_pipeline = (
 )
 
 client = Together(
-    api_key="92dd4356e04ea782af22b37f22673f1a69166f3c005ba97e3197c9997fd02721"
+    api_key=os.getenv("APIKEY")
 )
 
 llm_prompt = '''
