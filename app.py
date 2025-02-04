@@ -1,24 +1,19 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS
-from dotenv import load_dotenv
-import threading
 import sys
-import os
+import threading
 
+from flask_cors import CORS
 from together import Together
+from flask_socketio import SocketIO
+from flask import Flask, request, jsonify, send_from_directory
+
 from path_handler import PathManager
 
 path_manager = PathManager()
 sys.path.append(str(path_manager.get_base_directory()))
 
 from src.pipelines.type_hint import ControllerType
-from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
 from src.pipelines.pipeline.builder import PipelineBuilder
-
-load_dotenv(
-    str(path_manager.get_base_directory() / ".env")
-)
+from src.pipelines.config.default import PIPELINE_DEFAULT_CONFIG
 
 pipeline = (
     PipelineBuilder(controller_type=ControllerType.TRAINING)
@@ -46,7 +41,7 @@ inference_pipeline = (
 )
 
 client = Together(
-    api_key=os.getenv("APIKEY")
+    api_key="92dd4356e04ea782af22b37f22673f1a69166f3c005ba97e3197c9997fd02721"
 )
 
 llm_prompt = '''
@@ -98,7 +93,7 @@ app = Flask(
     __name__,
     static_folder="ui"
 )
-CORS(app)  # Enable CORS
+CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="http://127.0.0.1:5000")
 
 @app.route('/submit', methods=['POST'])
@@ -108,8 +103,7 @@ def submit_query():
     
     if not query:
         return jsonify({"error": "No query provided"}), 400
-    
-    # Start processing in background thread
+
     threading.Thread(target=process_query, args=(query,)).start()
     
     return jsonify({"status": "Processing started"}), 202
@@ -133,4 +127,4 @@ def on_connect():
     print("Client connected")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)  # Adjust as needed
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
